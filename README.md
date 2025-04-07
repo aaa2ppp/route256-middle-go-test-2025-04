@@ -10,3 +10,4 @@ https://techpoint.ozon.ru/contest/212?tab=tasks
 3. [Похожие строки](./docs/q3.pdf)
 4. [Крестики-нолики (Middle)](./docs/q4.pdf)
 5. [Content delivery](./docs/q5.pdf)
+6. [Галерея искусств (Junior)](./docs/q5j.pdf)
