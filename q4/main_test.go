@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"testing"
 )
@@ -331,5 +332,21 @@ func Test_checkLine(t *testing.T) {
 				t.Errorf("checkLine() = %v, want %v", got, tt.want)
 			}
 		})
+	}
+}
+
+func Benchmark_run(b *testing.B) {
+	const testNum = 35
+	for i := 0; i < b.N; i++ {
+		func() {
+			testName := strconv.Itoa(testNum)
+			testPath := filepath.Join(testData, testName)
+			testFile, err := os.Open(testPath)
+			if err != nil {
+				panic(err)
+			}
+			defer testFile.Close()
+			run(testFile, io.Discard)
+		}()
 	}
 }
