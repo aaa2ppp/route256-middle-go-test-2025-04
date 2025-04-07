@@ -29,13 +29,13 @@ func readParams(br *bufio.Reader) params {
 		panic(err)
 	}
 
-	// NOTE: На доску добавляем барьер из 0-й серху, справа и снизу
+	// На доску добавляем барьер из 0-ей серху, справа и снизу
+	// !!!NOTE!!!: Это меняет начало индесации по вертикали с 0 на 1!
 	desk := make([]row, 0, n+2)
 	desk = append(desk, make([]byte, m+1)) // барьер сверху
 
 	for i := 0; i < n; i++ {
-		s := make([]byte, m+1) // выделяем память под строку +1 байт для барьера
-		// br.Read(s[:m])         // !!! не всегда читает len(s) байт
+		s := make([]byte, m+1)                        // выделяем память под строку +1 байт для барьера слева
 		io.ReadFull(br, s[:m])                        // читаем m байт
 		if _, err := br.ReadSlice('\n'); err != nil { // вычитываем конец строки
 			panic(err)
@@ -59,7 +59,8 @@ func writeResults(bw *bufio.Writer, results results) {
 func solve(params params) results {
 	k, n, m, desk := params.k, params.n, params.m, params.desk
 
-	// NOTE(!): i индексируется начиная с 1, а j - начиная с 0
+	// !!!NOTE!!!: по вертикали (i) индексируемся с 1, а по горизонтали (j) - начиная с 0
+	//  (см. readParams)
 
 	ok := func() bool {
 		ans := 0
@@ -104,7 +105,7 @@ func solve(params params) results {
 	return results{ok}
 }
 
-// checkLine движется от (i,j) с шагом (di,dj) до барьера.
+// checkLine движется от (i,j) с шагом (di,dj) до барьера (любой символ отличный от '.', 'O' или 'X').
 // Возвращает:
 //
 //	 1 если можно поставить 'X', чтобы в линию было k,
@@ -115,92 +116,41 @@ func checkLine(k int, desk []row, i, j, di, dj int) (ans int) {
 	xlen := 0          // длина последовательности состоящей только из 'X' и не более одной точки
 	dot := math.MinInt // дистанция до точки. если < 0, то xlen не содержит точку
 
-	// loop:
 	for {
+		// TODO: Эти проверки после тестирования можно перенести внутрь кейсов.
+		// Это даст -1 или -2 if'а на итерацию.
+		if olen == k {
+			return -1
+		}
+		if xlen == k && dot > 0 {
+			ans = 1
+			xlen = dot - 1
+			dot = math.MinInt
+		}
+		if xlen >= k {
+			return -1
+		}
+
 		switch desk[i][j] {
 		case 'O':
-			dot = math.MaxInt
-			xlen = 0
 			olen++
-			if olen == k {
-				return -1
-			}
+			xlen = 0
+			dot = math.MinInt
 		case '.':
 			if dot > 0 {
 				xlen = dot - 1
 			}
-
+			olen = 0
+			xlen++
 			dot = 1
-			olen = 0
-			xlen++
-			if xlen == k {
-				// bingo!
-				ans = 1
-
-				// вырезаем точку
-				xlen = 0
-				dot = math.MinInt
-
-				// break loop
-			}
 		case 'X':
-			dot++
 			olen = 0
 			xlen++
-			if xlen < k {
-				break // switch
-			}
-			if xlen == k {
-				if dot < 0 { // точка отсутствует
-					return -1
-				}
-
-				// bingo!
-				ans = 1
-
-				// вырезаем точку
-				xlen = dot - 1
-				dot = math.MinInt
-
-				// break loop
-				break // switch
-			}
-			if xlen > k {
-				// возможно толко, если после точки следует последовательность из k 'X'
-				return -1
-			}
+			dot++
 		default: // уперлись в барьер
 			return ans
 		}
-		i, j = i+di, j+dj
-	}
 
-	// Хвостовой цикл. Уже найден положительный ответ.
-	// Осталось проверить, что дальше нет последовательностей из k 'O' или 'X'.
-	// По идее, этот цикл должен быть быстрее чем предыдущий, т.к. проще.
-	// Но ощутимого прироста я не почувствовал.
-
-	i, j = i+di, j+dj
-	for {
-		switch desk[i][j] {
-		case 'O':
-			xlen = 0
-			olen++
-			if olen == k {
-				return -1
-			}
-		case '.':
-			olen = 0
-			xlen = 0
-		case 'X':
-			olen = 0
-			xlen++
-			if xlen == k {
-				return -1
-			}
-		default:
-			return 1
-		}
 		i, j = i+di, j+dj
 	}
 }

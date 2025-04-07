@@ -18,6 +18,7 @@ func Test_run(t *testing.T) {
 		name    string
 		args    args
 		wantOut string
+		debug   bool
 	}{
 		{
 			"1",
@@ -46,11 +47,14 @@ X.X..
 NO
 NO
 `,
+			true,
 		},
 		// TODO: Add test cases.
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			defer func(v bool) { debugEnable = v }(debugEnable)
+			debugEnable = tt.debug
 			out := &bytes.Buffer{}
 			run(tt.args.in, out, solve)
 			if gotOut := out.String(); gotOut != tt.wantOut {
@@ -128,9 +132,10 @@ func Test_checkLine(t *testing.T) {
 		dj     int
 	}
 	tests := []struct {
-		name string
-		args args
-		want int
+		name  string
+		args  args
+		want  int
+		debug bool
 	}{
 		{
 			"0",
@@ -144,6 +149,21 @@ func Test_checkLine(t *testing.T) {
 				0, 1,
 			},
 			-1,
+			false,
+		},
+		{
+			"0.1",
+			args{
+				3,
+				[]string{
+					"X.X",
+				},
+				'X',
+				0, 0,
+				0, 1,
+			},
+			1,
+			true,
 		},
 		{
 			"0.1",
@@ -157,6 +177,7 @@ func Test_checkLine(t *testing.T) {
 				0, 1,
 			},
 			-1,
+			false,
 		},
 		{
 			"1.1",
@@ -170,6 +191,7 @@ func Test_checkLine(t *testing.T) {
 				0, 1,
 			},
 			1,
+			false,
 		},
 		{
 			"1.2",
@@ -183,6 +205,7 @@ func Test_checkLine(t *testing.T) {
 				0, 1,
 			},
 			-1,
+			false,
 		},
 		{
 			"1.3",
@@ -196,6 +219,7 @@ func Test_checkLine(t *testing.T) {
 				0, 1,
 			},
 			-1,
+			false,
 		},
 		{
 			"1.4",
@@ -209,6 +233,7 @@ func Test_checkLine(t *testing.T) {
 				0, 1,
 			},
 			-1,
+			false,
 		},
 		{
 			"1.5",
@@ -222,6 +247,7 @@ func Test_checkLine(t *testing.T) {
 				0, 1,
 			},
 			1,
+			false,
 		},
 		{
 			"1.6",
@@ -235,6 +261,7 @@ func Test_checkLine(t *testing.T) {
 				0, 1,
 			},
 			1,
+			false,
 		},
 		{
 			"1.7",
@@ -248,6 +275,7 @@ func Test_checkLine(t *testing.T) {
 				0, 1,
 			},
 			1,
+			false,
 		},
 		{
 			"1.8",
@@ -261,6 +289,7 @@ func Test_checkLine(t *testing.T) {
 				0, 1,
 			},
 			1,
+			false,
 		},
 		{
 			"1.9",
@@ -274,6 +303,7 @@ func Test_checkLine(t *testing.T) {
 				0, 1,
 			},
 			-1,
+			false,
 		},
 		{
 			"2",
@@ -289,6 +319,7 @@ func Test_checkLine(t *testing.T) {
 				1, 0,
 			},
 			1,
+			false,
 		},
 		{
 			"3",
@@ -304,6 +335,7 @@ func Test_checkLine(t *testing.T) {
 				1, 1,
 			},
 			1,
+			false,
 		},
 		{
 			"4",
@@ -319,6 +351,7 @@ func Test_checkLine(t *testing.T) {
 				1, 1,
 			},
 			1,
+			false,
 		},
 		{
 			"5",
@@ -336,11 +369,14 @@ func Test_checkLine(t *testing.T) {
 				1, 1,
 			},
 			-1,
+			false,
 		},
 		// TODO: Add test cases.
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			defer func(v bool) { debugEnable = v }(debugEnable)
+			debugEnable = tt.debug
 			// if got := checkLine(tt.args.k, strDeskToByteDesk1(tt.args.desk), tt.args.i, tt.args.j, tt.args.di, tt.args.dj); got != tt.want {
 			// 	t.Errorf("checkLine() = %v, want %v", got, tt.want)
 			// }

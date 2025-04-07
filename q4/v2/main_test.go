@@ -331,22 +331,8 @@ func Test_checkLine(t *testing.T) {
 			if got := checkLine(tt.args.k, tt.args.desk, tt.args.i, tt.args.j, tt.args.di, tt.args.dj); got != tt.want {
 				t.Errorf("checkLine() = %v, want %v", got, tt.want)
 			}
-			// if got := checkLine(tt.args.k, strDeskToByteDesk1(tt.args.desk), tt.args.i, tt.args.j, tt.args.di, tt.args.dj); got != tt.want {
-			// 	t.Errorf("checkLine() = %v, want %v", got, tt.want)
-			// }
 		})
 	}
-}
-
-func strDeskToByteDesk1(strDesk []string) [][]byte {
-	n, m := len(strDesk), len(strDesk[0])
-	byteDesk := make([][]byte, n)
-
-	for i := 0; i < n; i++ {
-		byteDesk[i] = append(make([]byte, 0, m), strDesk[i]...)
-	}
-
-	return byteDesk
 }
 
 func Benchmark_run(b *testing.B) {

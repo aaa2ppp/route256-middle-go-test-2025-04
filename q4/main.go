@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"strings"
 )
 
 func solve(k int, desk []string) bool {
@@ -144,11 +143,10 @@ func run(in io.Reader, out io.Writer) {
 		}
 		desk := make([]string, 0, n)
 		for j := 0; j < n; j++ {
-			s, err := br.ReadString('\n')
-			if err != nil {
+			var s string
+			if _, err := fmt.Fscanln(br, &s); err != nil {
 				panic(err)
 			}
-			s = strings.TrimRight(s, "\r\n")
 			desk = append(desk, s)
 		}
 		if solve(k, desk) {

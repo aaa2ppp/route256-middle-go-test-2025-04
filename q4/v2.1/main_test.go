@@ -331,9 +331,6 @@ func Test_checkLine(t *testing.T) {
 			if got := checkLine(tt.args.k, stringSliceToDesk(tt.args.desk), tt.args.i, tt.args.j, tt.args.di, tt.args.dj); got != tt.want {
 				t.Errorf("checkLine() = %v, want %v", got, tt.want)
 			}
-			// if got := checkLine(tt.args.k, strDeskToByteDesk1(tt.args.desk), tt.args.i, tt.args.j, tt.args.di, tt.args.dj); got != tt.want {
-			// 	t.Errorf("checkLine() = %v, want %v", got, tt.want)
-			// }
 		})
 	}
 }
